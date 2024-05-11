@@ -1,0 +1,88 @@
+<snippet>
+	<content><![CDATA[const int INF = 2 * 20 * 19 * 16 + 1;
+namespace sxw {
+    template <class T>
+    struct mf_graph {
+        private: 
+            int _n, _m;
+            std::vector<int> e, ne, h; int idx;
+            std::vector<T> w;
+            std::vector<int> now, d, q;
+        public :
+            mf_graph() : _n(0), _m(0), idx(0) { }
+            explicit mf_graph(int n, int m) : idx(0), _n(n), _m(m * 2), e(m * 2), ne(m * 2), w(m * 2), h(n, -1), now(n), d(n), q(n) { }
+
+        void add_edge(int a, int b, T c) {
+            assert(a >= 0 && a < _n);
+            assert(b >= 0 && b < _n);
+            assert(c >= 0);
+            e[idx] = b; ne[idx] = h[a]; w[idx] = c; h[a] = idx ++;
+            e[idx] = a; ne[idx] = h[b]; w[idx] = 0; h[b] = idx ++;
+        }
+        T max_flow(int s, int t) {
+            T ans = 0;
+            while (bfs(s, t)) {
+                ans += dinic(s, INF, t);
+            }
+            return ans;
+        }   
+        bool bfs(int s, int t) {
+            int hh = 0, tt = -1;
+            std::fill(now.begin(), now.end(), 0);
+            std::fill(d.begin(), d.end(), 0);
+            q[++ tt] = s; now[s] = h[s]; d[s] = 1;
+
+            int u;
+            while (hh <= tt) {
+                u = q[hh ++];
+                for (int i = h[u]; i != -1; i = ne[i]) {
+                    int v = e[i];
+                    if (w[i] && !d[v]) {
+                        now[v] = h[v]; 
+                        d[v] = d[u] + 1;
+                        q[++ tt] = v;
+                        if (v == t) return true;
+                    }
+                }
+            }
+            return false;
+        }
+        T dinic(int x, T flow, int t) {
+            if (x == t) return flow;
+
+            T res = flow, k;
+            for (int i = now[x]; i != -1; i = ne[i]) {
+                now[x] = i;
+                int y = e[i];
+                if (w[i] && d[y] == d[x] + 1) {
+                    k = dinic(y, min(w[i], res), t);
+                    w[i] -= k; w[i ^ 1] += k;
+                    res -= k;
+                    // std::cout << e[i ^ 1] << " " << e[i] << " " << w[i] << "\n";
+                }
+            }
+            return flow - res;
+        }
+        std::vector<int> min_cut(int s) {
+            std::vector<int> visited(_n);
+            int hh = 0, tt = -1;
+            q[++ tt] = s; visited[s] = 1;
+            while (hh <= tt) {
+                int p = q[hh ++];
+                for (int i = h[p]; i != -1; i = ne[i]) {
+                    int j = e[i];
+                    if (w[i] && !visited[j]) {
+                        visited[j] = 1;
+                        q[++ tt] = j;
+                    }
+                }   
+            }
+            return visited;
+        }
+    };
+}
+]]></content>
+	<tabTrigger>maxflowgraph</tabTrigger>  
+    <description>max-flow-graph</description>  
+    <scope>source.c++</scope>
+</snippet>

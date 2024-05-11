@@ -1,0 +1,9 @@
+<snippet>  
+    <content><![CDATA[std::vector<int> e, ne, w, h; int idx = 0;
+inline void add(int a, int b, int c) {
+	e[idx] = b; w[idx] =c; ne[idx] = h[a]; h[a] = idx ++;
+}]]></content>  
+    <tabTrigger>declare-graph</tabTrigger>  
+    <description>declare-graph</description>  
+    <scope>source.c++</scope>  
+</snippet>

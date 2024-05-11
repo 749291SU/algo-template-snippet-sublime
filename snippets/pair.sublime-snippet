@@ -1,0 +1,7 @@
+<snippet>  
+    <content><![CDATA[std::pair<${1:int}, ${2:int}>
+]]></content>  
+    <tabTrigger>pair</tabTrigger>  
+    <description>pair</description>  
+    <scope>source.c++</scope>  
+</snippet>

@@ -1,0 +1,7 @@
+<snippet>  
+    <content><![CDATA[std::vector<std::vector<${1:int}>>
+]]></content>  
+    <tabTrigger>vector-vector</tabTrigger>  
+    <description>vector-vector</description>  
+    <scope>source.c++</scope>  
+</snippet>

@@ -1,0 +1,7 @@
+<snippet>  
+    <content><![CDATA[std::vector<std::tuple<${1:int}, ${2:int}, ${3:int}>>
+]]></content>  
+    <tabTrigger>vector-tuple</tabTrigger>  
+    <description>vector-tuple</description>  
+    <scope>source.c++</scope>  
+</snippet>

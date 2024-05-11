@@ -1,0 +1,68 @@
+<snippet>  
+    <content><![CDATA[namespace sxw {
+    struct Node {
+        int l, r, dat_id, dat_cc; 
+        Node() { }
+    }; 
+    struct DynamicSegmentTree {
+        int _n;
+        std::vector<Node> tr; int tot;
+        DynamicSegmentTree() { } 
+        DynamicSegmentTree(int n) : _n(n), tr(n * 17 * 4), tot(1) { } 
+        int build() {
+            tot ++;
+            tr[tot].l = tr[tot].r = tr[tot].dat_id = tr[tot].dat_cc = 0; 
+            return tot;
+        }
+        void pushup(int p, int lc, int rc) {
+            tr[p].dat_cc = max(tr[lc].dat_cc, tr[rc].dat_cc);  
+            tr[p].dat_id = tr[lc].dat_cc == tr[p].dat_cc ? tr[lc].dat_id : tr[rc].dat_id;
+        }
+        void modify(int p, int l, int r, int val, int delta) {
+            if (l == r) {
+                tr[p].dat_id = val;
+                tr[p].dat_cc += delta; 
+                return ;
+            } 
+            int mid = l + r >> 1;
+            if (val <= mid) {
+                if (!tr[p].l) tr[p].l = build();
+                modify(tr[p].l, l, mid, val, delta); 
+            }
+            else {
+                if (!tr[p].r) tr[p].r = build();
+                modify(tr[p].r, mid + 1, r, val, delta);
+            }
+            pushup(p, tr[p].l, tr[p].r);
+        }
+        int merge(int p, int q, int l, int r) {
+            if (!p) return q; 
+            if (!q) return p;
+
+            if (l == r) {
+                tr[p].dat_cc += tr[q].dat_cc; 
+                return p;
+            }
+
+            int mid = l + r >> 1;
+            tr[p].l = merge(tr[p].l, tr[q].l, l, mid);
+            tr[p].r = merge(tr[p].r, tr[q].r, mid + 1, r);
+
+            pushup(p, tr[p].l, tr[p].r);
+            return p;
+        }
+        void print(int p, int l, int r) {
+            if (!p) return ;
+            if (l == r) {
+                std::cout << l << " " << r << " " << tr[p].dat_cc << " " << tr[p].dat_id << "\n";                    
+                return ;
+            } 
+            int mid = l + r >> 1;
+            print(tr[p].l, l, mid); print(tr[p].r, mid + 1, r);
+        }
+    };
+};]]></content>  
+    <tabTrigger>segment-tree-dynamic</tabTrigger>  
+    <description>segment-tree-dynamic</description>  
+    <scope>source.c++</scope>  
+</snippet>

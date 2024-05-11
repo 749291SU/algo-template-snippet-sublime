@@ -1,0 +1,7 @@
+<snippet>  
+    <content><![CDATA[std::function<${1:void}(${2:int}${3:})>
+]]></content>  
+    <tabTrigger>func</tabTrigger>  
+    <description>function</description>  
+    <scope>source.c++</scope>  
+</snippet>

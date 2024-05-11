@@ -1,0 +1,7 @@
+<snippet>  
+    <content><![CDATA[sxw::mf_graph<${1:int}>
+]]></content>  
+    <tabTrigger>mf-graph</tabTrigger>  
+    <description>mf-graph</description>  
+    <scope>source.c++</scope>  
+</snippet>

@@ -1,0 +1,12 @@
+<snippet>  
+    <content><![CDATA[{
+    idx = 0;
+    h.resize(n); std::fill(h.begin(), h.end(), -1);
+    e.resize(m); std::fill(e.beign(), e.end(), 0);
+    ne.resize(m); std::fill(ne.begin(), ne.end(), 0);
+    w.resize(m); std::fill(w.begin(), w.end(), 0);
+}]]></content>  
+    <tabTrigger>init-graph</tabTrigger>  
+    <description>init-graph</description>  
+    <scope>source.c++</scope>  
+</snippet>
