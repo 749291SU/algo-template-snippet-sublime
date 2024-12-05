@@ -1,60 +1,76 @@
 <snippet>  
     <content><![CDATA[namespace sxw {
     struct Node {
-        int l, r, dat_id, dat_cc; 
+        int l, r;
+        int cc1, cc2;
         Node() { }
     }; 
-    struct DynamicSegmentTree {
+    struct dyn_seg {
         int _n;
         std::vector<Node> tr; int tot;
-        DynamicSegmentTree() { } 
-        DynamicSegmentTree(int n) : _n(n), tr(n * 17 * 4), tot(1) { } 
-        int build() {
+        dyn_seg() { } 
+        dyn_seg(int n) : _n(n), tr(n * 17 * 4), tot(0) {
+            tr[0].cc1 = tr[0].cc2 = 0;
+        } 
+        int build(int l, int r) {
             tot ++;
-            tr[tot].l = tr[tot].r = tr[tot].dat_id = tr[tot].dat_cc = 0; 
+            tr[tot].l = tr[tot].r = tr[tot].cc1 = tr[tot].cc2 = 0;
             return tot;
         }
-        void pushup(int p, int lc, int rc) {
-            tr[p].dat_cc = max(tr[lc].dat_cc, tr[rc].dat_cc);  
-            tr[p].dat_id = tr[lc].dat_cc == tr[p].dat_cc ? tr[lc].dat_id : tr[rc].dat_id;
+        void pushup(int p, int l, int r, int lc, int rc, int v) {
+            tr[p].cc1 = tr[lc].cc1;
+            tr[p].cc2 = tr[rc].cc2;
         }
-        void modify(int p, int l, int r, int val, int delta) {
+        void modify(int p, int l, int r, int val, int v1, int v2) {
             if (l == r) {
-                tr[p].dat_id = val;
-                tr[p].dat_cc += delta; 
+                tr[p].cc1 = tr[p].cc2 = 1;
                 return ;
             } 
             int mid = l + r >> 1;
             if (val <= mid) {
-                if (!tr[p].l) tr[p].l = build();
-                modify(tr[p].l, l, mid, val, delta); 
+                if (!tr[p].l) tr[p].l = build(l, mid);
+                modify(tr[p].l, l, mid, val, v1, v2); 
             }
             else {
-                if (!tr[p].r) tr[p].r = build();
-                modify(tr[p].r, mid + 1, r, val, delta);
+                if (!tr[p].r) tr[p].r = build(mid + 1, r);
+                modify(tr[p].r, mid + 1, r, val, v1, v2);
             }
-            pushup(p, tr[p].l, tr[p].r);
+            pushup(p, l, r, tr[p].l, tr[p].r, v2);
         }
-        int merge(int p, int q, int l, int r) {
+        Node ask(int p, int l, int r, int l1, int r1) {
+            if (l1 <= l && r1 >= r) {
+                return tr[p];
+            }
+            int mid = l + r >> 1;
+            if (r1 <= mid) return ask(tr[p].l, l, mid, l1, r1);
+            if (l1 > mid) return ask(tr[p].r, mid + 1, r, l1, r1);
+            Node roo, lo = ask(tr[p].l, l, mid, l1, r1), ro = ask(tr[p].r, mid + 1, r, l1, r1);
+            return roo;
+        }
+        int merge(int p, int q, int l, int r, int vv) {
             if (!p) return q; 
             if (!q) return p;
 
             if (l == r) {
-                tr[p].dat_cc += tr[q].dat_cc; 
+                tr[p].cc1 = tr[p].cc2 = 1;
                 return p;
             }
 
             int mid = l + r >> 1;
-            tr[p].l = merge(tr[p].l, tr[q].l, l, mid);
-            tr[p].r = merge(tr[p].r, tr[q].r, mid + 1, r);
+            tr[p].l = merge(tr[p].l, tr[q].l, l, mid, vv);
+            tr[p].r = merge(tr[p].r, tr[q].r, mid + 1, r, vv);
 
-            pushup(p, tr[p].l, tr[p].r);
+            if (tr[tr[p].l].cc2 && tr[tr[p].r].cc1) {
+                // std::cout << l << " " << r << " " << vv << "\n";
+                b[mid] = min(b[mid], vv); 
+            } 
+            pushup(p, l, r, tr[p].l, tr[p].r, vv);
             return p;
         }
         void print(int p, int l, int r) {
             if (!p) return ;
             if (l == r) {
-                std::cout << l << " " << r << " " << tr[p].dat_cc << " " << tr[p].dat_id << "\n";                    
+                // std::cout << l << " " << r << " " << tr[p].dat_cc << " " << tr[p].dat_id << "\n";                    
                 return ;
             } 
             int mid = l + r >> 1;

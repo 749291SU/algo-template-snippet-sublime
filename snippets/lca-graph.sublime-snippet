@@ -1,0 +1,59 @@
+<snippet>  
+    <content><![CDATA[namespace sxw {
+    template <class T>
+    struct lca_graph {
+        int _n, _m;
+        std::vector<int> e, ne, h; int idx;
+        std::vector<T> w;
+
+        std::vector<std::vector<int>> f;
+        std::vector<int> depth, lg; 
+        
+        lca_graph() : _n(0), _m(0), idx(0) { }
+        explicit lca_graph(int n, int m) : idx(0), _n(n), _m(m), e(m), ne(m), w(m), h(n, -1) {
+        }
+
+        void add_edge(int a, int b, T c) {
+            assert(a >= 0 && a < _n);
+            assert(b >= 0 && b < _n);
+            assert(c >= 0);
+            e[idx] = b; ne[idx] = h[a]; w[idx] = c; h[a] = idx ++;
+        }
+
+        void init_lca() {
+            lg.resize(_n); depth.resize(_n);
+            for (int i = 1; i < _n; i ++) lg[i] = lg[i - 1] + ((1 << (lg[i - 1] + 1)) == i);
+            f = std::vector<std::vector<int>> (_n, std::vector<int>(lg[_n - 1] + 1));
+            dfs(1, 0);
+        }
+        void dfs(int x, int fa) {
+            f[x][0] = fa; depth[x] = depth[fa] + 1;
+            for (int i = 1; i <= lg[depth[x]]; i ++) {
+                f[x][i] = f[f[x][i - 1]][i - 1];
+            }
+            for (int i = h[x]; i != -1; i = ne[i]) {
+                int j = e[i];
+                if (j != fa) dfs(j, x);
+            }
+        }
+        int lca(int a, int b) {
+            if (depth[a] < depth[b]) std::swap(a, b);
+            
+            while (depth[a] > depth[b]) {
+                a = f[a][lg[depth[a] - depth[b]]];      
+            }   
+            if (a == b) return a;
+
+            for (int i = lg[depth[a]]; i >= 0; i --) {
+                if (f[a][i] != f[b][i]) {
+                    a = f[a][i]; b = f[b][i];
+                }
+            }
+            return f[a][0];
+        }
+    };
+}]]></content>  
+    <tabTrigger>lca-graph</tabTrigger>  
+    <description>lca-graph</description>  
+    <scope>source.c++</scope>  
+</snippet>

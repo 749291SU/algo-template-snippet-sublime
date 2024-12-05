@@ -1,0 +1,81 @@
+<snippet>
+	<content><![CDATA[const int INF = 0x3f3f3f3f;
+
+namespace sxw {
+    struct cost_flow {
+        int _n;
+        int _s, _t;
+        int maxflow, maxcost;
+        std::vector<int> q, dist, in, pre;
+
+        std::vector<int> e, ne, h, w, co; int idx;
+        cost_flow() {}  
+        cost_flow(int n, int m) : idx(0), _n(n), q(n * 100), dist(n), in(n), pre(n), e(m * 2), ne(m * 2), h(n, -1), w(m * 2), co(m * 2) {
+            maxflow = 0;
+            maxcost = 0;
+        }
+
+        void add_edge(int u, int v, int _w, int cost) {
+            e[idx] = v; ne[idx] = h[u]; w[idx] = _w; co[idx] = cost; h[u] = idx ++;
+            e[idx] = u; ne[idx] = h[v]; w[idx] = 0; co[idx] = cost; h[v] = idx ++;
+        }
+
+        bool spfa() {
+            int hh = 0, tt = -1;
+
+            std::fill(pre.begin(), pre.end(), -1);
+            std::fill(dist.begin(), dist.end(), 0x3f3f3f3f);
+            std::fill(in.begin(), in.end(), 0);
+            q[++ tt] = _s; in[_s] = 1; dist[_s] = 0;
+
+            int tm;
+            while (hh <= tt) {
+                tm = q[hh ++]; in[tm] = 0;
+
+                for (int i = h[tm]; i != -1; i = ne[i]) {
+                    if (!w[i]) continue;
+                    int j = e[i];
+
+                    if (dist[j] > dist[tm] + co[i]) {
+                        dist[j] = dist[tm] + co[i];
+                        pre[j] = i;
+                        if (!in[j]) { q[++ tt] = j; in[j] = 1; }
+                    }
+                }
+            } 
+            // std::cout << maxflow << " " << dist[_t] << "\n";
+            return dist[_t] != 0x3f3f3f3f;
+        }
+
+        inline void update() {
+            int co_s = 0, flow = INF, x = _t;
+
+            while (x != _s) {
+                flow = min(flow, w[pre[x]]);  
+                co_s += co[pre[x]]; 
+
+                // std::cout << x << " ";
+                x = e[pre[x] ^ 1];
+            }
+            // std::cout << s << "\n";
+            x = _t;
+            while (x != _s) {
+                w[pre[x]] -= flow; w[pre[x] ^ 1] += flow;
+                x = e[pre[x] ^ 1];
+            }
+            maxflow += flow; maxcost += co_s * flow;
+            // std::cout << co_s << "\n";
+        }
+
+        inline int solve(int s, int t) {
+            _s = s; _t = t;
+            while (spfa()) {
+                update();   
+            }
+            return maxcost;
+        }
+    };
+};]]></content>
+	<tabTrigger>cost-flow</tabTrigger>
+	<scope>source.c++</scope>
+</snippet>

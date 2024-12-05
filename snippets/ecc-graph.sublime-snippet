@@ -1,0 +1,100 @@
+<snippet>  
+    <content><![CDATA[namespace sxw {
+    struct ecc_graph {
+        // graph info
+        int _n, _m;
+        std::vector<int> e, ne, h, in; int idx;
+        std::vector<int> w;
+        // ecc info
+        std::vector<int> dfn, low, c, bridge; int tot, did;
+
+        ecc_graph() : _n(0), _m(0), idx(0) { }
+        ecc_graph(int n, int m) : idx(0), _n(n), _m(m), e(m), ne(m), w(m), in(n), h(n, -1) {
+            dfn.resize(n); low.resize(n); c.resize(n); bridge.resize(m);
+        }
+        void add_edge(int a, int b, int c) {
+            assert(a >= 0 && a < _n);
+            assert(b >= 0 && b < _n);
+            assert(c >= 0);
+            e[idx] = b; ne[idx] = h[a]; w[idx] = c; h[a] = idx ++; in[b] ++;
+        }
+        void solve_tarjan() {
+            init_tarjan();
+            for (int i = 1; i < _n; i ++) {
+                if (!dfn[i]) {
+                    tarjan(i, -1);
+                }
+            }
+        }
+        void init_tarjan() {
+            tot = 0; did = 0;
+            std::fill(c.begin(), c.end(), 0);
+            std::fill(dfn.begin(), dfn.end(), 0);
+            std::fill(bridge.begin(), bridge.end(), 0);
+        }
+        void tarjan(int x, int in_edge) {
+            dfn[x] = low[x] = ++ tot;
+
+            for (int i = h[x]; i != -1; i = ne[i]) {
+                int j = e[i];
+                if (!dfn[j]) {
+                    tarjan(j, i);   
+                    low[x] = min(low[x], low[j]);
+                    if (dfn[x] < low[j]) {
+                        bridge[i] = bridge[i ^ 1] = 1;
+                    } 
+                } 
+                else if ((i ^ 1) != in_edge) low[x] = min(low[x], dfn[j]);
+            }
+        }
+        void print_bridges() {
+            for (int i = 0; i < idx; i += 2) {
+                if (bridge[i]) {
+                    std::cout << "edge id: " << i << " " << e[i] << " " << e[i ^ 1] << "\n"; 
+                }
+            }
+        }
+        void dfs(int x) {
+            c[x] = did;
+            for (int i = h[x]; i != -1; i = ne[i]) {
+                int j = e[i];
+                if (c[j] || bridge[i]) continue; 
+                dfs(j); 
+            }
+        }
+        void get_e_dcc() {
+            for (int i = 1; i < _n; i ++) {
+                if (!c[i]) {
+                    did ++;
+                    dfs(i);
+                }
+            }   
+        }
+        void print_e_dcc() {
+            for (int i = 1; i <= did; i ++) {
+                std::cout << i << ": ";
+                for (int j = 1; j < _n; j ++) {
+                    if (c[j] == i) std::cout << j << " ";
+                }
+                std::cout << "\n";
+            } 
+        }
+        sxw::sh_graph<int> construct_e_dcc_trees() {
+            get_e_dcc();
+            sxw::sh_graph<int> g(did + 1, _m);
+            int x, y;
+            for (int i = 0; i < idx; i += 2) {
+                x = e[i]; y = e[i ^ 1];
+                if (c[x] != c[y]) {
+                    g.add_edge(c[x], c[y], 0);
+                    g.add_edge(c[y], c[x], 0);
+                }
+            }   
+            return g;
+        }
+    };
+};]]></content>  
+    <tabTrigger>ecc-graph</tabTrigger>  
+    <description>ecc-graph</description>  
+    <scope>source.c++</scope>  
+</snippet>

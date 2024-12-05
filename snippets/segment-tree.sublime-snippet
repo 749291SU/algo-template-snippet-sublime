@@ -1,44 +1,62 @@
 <snippet>  
     <content><![CDATA[namespace sxw {
     struct Node {
-        int l, r, sum, lmax, rmax, dat;
+        int l, r, add;
         Node() { }
     };
-    struct SegmentTree {
+    struct seg_tree {
         int _n; 
         std::vector<Node> t;
-        SegmentTree() { } 
-        SegmentTree(int n) : _n(n), t(4 * n) { } 
-
+        seg_tree() { } 
+        seg_tree(int n) : _n(n), t(4 * n) {
+            build(1, 1, n);
+        } 
         inline void pushup(Node& p, Node& l, Node& r) {
-        
         }
-
         inline void pushup(int p) {
             pushup(t[p], t[p << 1], t[p << 1 | 1]);
         }
-
         void build(int p, int l, int r) {
-            t[p].l = l; t[p].r = r;
+            t[p].l = l; t[p].r = r; t[p].add = 0;
             if (l == r) { 
-                
                 return ;
             }  
             int mid = l + r >> 1;
             build(p << 1, l, mid); build(p << 1 | 1, mid + 1, r);
             pushup(p);
         }
+        void spread(Node& p, Node& l, Node& r) {
+            if (p.add) {
+                l.add += p.add; r.add += p.add;
+                p.add = 0;  
+            }       
+        }
+        void spread(int p) {
+            spread(t[p], t[p << 1], t[p << 1 | 1]);
+        } 
         void modify(int p, int x, int v) {
             if (t[p].l == t[p].r) {
-                
                 return ;
             } 
+            spread(p);
             int mid = t[p].l + t[p].r >> 1;
             x <= mid ? modify(p << 1, x, v) : modify(p << 1 | 1, x, v);
             pushup(p);
         }
+        void modify(int p, int l, int r, int v) {
+            if (t[p].l >= l && t[p].r <= r) {
+                t[p].add += v;  
+                return ;
+            }       
+            spread(p);
+            int mid = t[p].l + t[p].r >> 1;
+            if (l <= mid) modify(p << 1, l, r, v);
+            if (r > mid) modify(p << 1 | 1, l, r, v);
+            pushup(p);
+        }
         Node ask(int p, int l, int r) {
             if (l <= t[p].l && r >= t[p].r) return t[p];
+            spread(p);
             int mid = t[p].l + t[p].r >> 1;
             if (l > mid) return ask(p << 1 | 1, l, r);
             if (r <= mid) return ask(p << 1, l, r);

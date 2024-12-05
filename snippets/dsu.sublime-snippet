@@ -1,14 +1,12 @@
 <snippet>  
     <content><![CDATA[namespace sxw {
-	struct DSU {
-		private:
-			int _n;
-			std::vector<int> fa, siz;
-		public:
-			DSU() : { }	
-			DSU(int n) : _n(n), fa(n), siz(n) {
-				for (int i = 1; i <= n; i ++) { fa[i] = i; siz[i] = 1; }
-			}
+	struct dsu {
+		int _n;
+		std::vector<int> fa, siz;
+		dsu() { }	
+		dsu(int n) : _n(n), fa(n), siz(n) {
+			for (int i = 1; i < n; i ++) { fa[i] = i; siz[i] = 1; }
+		}
 		int leader(int x) {
 			return fa[x] == x ? x : fa[x] = leader(fa[x]);	
 		}
@@ -21,8 +19,7 @@
 		}
 		int size(int x) { return siz[leader(x)]; }
 	};
-}
-]]></content>  
+}]]></content>  
     <tabTrigger>dsu</tabTrigger>  
     <description>dsu</description>  
     <scope>source.c++</scope>  

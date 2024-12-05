@@ -1,6 +1,6 @@
-<snippet>  
-    <content><![CDATA[template<class T>
-constexpr T power(T a, i64 b) {
+<snippet>
+	<content><![CDATA[template<class T>
+ T power(T a, i64 b) {
     T res = 1;
     for (; b; b /= 2, a *= a) {
         if (b % 2) {
@@ -17,13 +17,14 @@ i64 mul(i64 a, i64 b, i64 p) {
     }
     return res;
 }
-template<int P>
+
+int P;
 struct MInt {
     int x;
-    constexpr MInt() : x{} {}
-    constexpr MInt(i64 x) : x{norm(x % P)} {}
+    MInt() : x{} {}
+    MInt(i64 x) : x{norm(x % P)} {}
     
-    constexpr int norm(int x) const {
+    int norm(int x) const {
         if (x < 0) {
             x += P;
         }
@@ -32,18 +33,18 @@ struct MInt {
         }
         return x;
     }
-    constexpr int val() const {
+    int val() const {
         return x;
     }
-    explicit constexpr operator int() const {
+    explicit operator int() const {
         return x;
     }
-    constexpr MInt operator-() const {
+    MInt operator-() const {
         MInt res;
         res.x = norm(P - x);
         return res;
     }
-    constexpr MInt inv() const {
+    MInt inv() const {
         assert(x != 0);
         return power(*this, P - 2);
     }
@@ -59,52 +60,46 @@ struct MInt {
         x = norm(x - rhs.x);
         return *this;
     }
-    constexpr MInt &operator/=(const MInt& rhs) & {
+    MInt &operator/=(const MInt& rhs) & {
         return *this *= rhs.inv();
     }
-    friend constexpr MInt operator*(MInt lhs, const MInt& rhs) {
+    friend MInt operator*(MInt lhs, const MInt& rhs) {
         MInt res = lhs;
         res *= rhs;
         return res;
     }
-    friend constexpr MInt operator+(MInt lhs, const MInt& rhs) {
+    friend MInt operator+(MInt lhs, const MInt& rhs) {
         MInt res = lhs;
         res += rhs;
         return res;
     }
-    friend constexpr MInt operator-(MInt lhs, const MInt& rhs) {
+    friend MInt operator-(MInt lhs, const MInt& rhs) {
         MInt res = lhs;
         res -= rhs;
         return res;
     }
-    friend constexpr MInt operator/(MInt lhs, const MInt& rhs) {
+    friend MInt operator/(MInt lhs, const MInt& rhs) {
         MInt res = lhs;
         res /= rhs;
         return res;
     }
-    friend constexpr std::istream &operator>>(std::istream &is, MInt &a) {
+    friend std::istream &operator>>(std::istream &is, MInt &a) {
         i64 v;
         is >> v;
         a = MInt(v);
         return is;
     }
-    friend constexpr std::ostream &operator<<(std::ostream &os, const MInt &a) {
+    friend std::ostream &operator<<(std::ostream &os, const MInt &a) {
         return os << a.val();
     }
-    friend constexpr bool operator==(const MInt& lhs, const MInt& rhs) {
+    friend bool operator==(const MInt& lhs, const MInt& rhs) {
         return lhs.val() == rhs.val();
     }
-    friend constexpr bool operator!=(const MInt& lhs, const MInt& rhs) {
+    friend bool operator!=(const MInt& lhs, const MInt& rhs) {
         return lhs.val() != rhs.val();
     }
 };
-constexpr int P = ${1:998244353};
-using Z = MInt<P>;
- 
-template<int V, int P>
-constexpr MInt<P> CInv = MInt<P>(V).inv();
-]]></content>  
-    <tabTrigger>count-int</tabTrigger>  
-    <description>count-int</description>  
-    <scope>source.c++</scope>  
+using Z = MInt;]]></content>
+	<tabTrigger>count-int-variable</tabTrigger>
+	<scope>source.c++</scope>
 </snippet>

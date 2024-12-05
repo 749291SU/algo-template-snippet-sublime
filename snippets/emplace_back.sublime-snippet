@@ -1,0 +1,5 @@
+<snippet>
+	<content><![CDATA[${1:a}.emplace_back(${2:x}) ]]></content>
+	<tabTrigger>emp</tabTrigger>
+	<scope>source.c++</scope>
+</snippet>

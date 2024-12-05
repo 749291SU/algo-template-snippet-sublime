@@ -1,6 +1,6 @@
 <snippet>  
     <content><![CDATA[std::vector<${1:int}>]]></content>  
-    <tabTrigger>vector</tabTrigger>  
-    <description>vector</description>  
+    <tabTrigger>vec</tabTrigger>  
+    <description>vec</description>  
     <scope>source.c++</scope>  
 </snippet>
